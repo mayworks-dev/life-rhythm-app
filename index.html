@@ -100,15 +100,63 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
 .danger-card{background:#fff;border-radius:18px;margin-top:24px;padding:16px}.danger-btn{width:100%;border:1px solid #ef6670;background:#fff5f5;color:#df3e4b;border-radius:14px;padding:14px;font-weight:900;font-size:15px}
 .confirm-overlay{display:none;position:fixed;inset:0;background:#0007;z-index:999;align-items:center;justify-content:center;padding:24px}.confirm-overlay.active{display:flex}
 .confirm-box{width:min(360px,100%);background:#fff;border-radius:22px;padding:22px;text-align:center}.confirm-box h3{margin:5px 0 10px}.confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}.confirm-actions button{border:0;border-radius:13px;padding:13px;font-weight:850}.cancel-delete{background:#edf2f0}.do-delete{background:#e94d59;color:#fff}
+
+/* v10: compact first-run UI + banner area directly below the iOS safe area */
+.onboarding,.fixed-flow,.task-flow,.ai-flow,.exec-flow,.analysis-flow,.settings-flow{
+  padding-top:env(safe-area-inset-top);
+}
+.onboarding::before,.fixed-flow::before,.task-flow::before,.ai-flow::before,
+.exec-flow::before,.analysis-flow::before,.settings-flow::before{
+  content:"バナー広告スペース";
+  height:50px;
+  border-bottom:1px dashed #bdc9c6;
+  background:#f7f9f8;
+  color:#93a19d;
+  display:grid;
+  place-items:center;
+  font-size:12px;
+}
+.ob-screen,.fixed-screen,.task-screen,.ai-screen{
+  min-height:calc(100vh - 50px - env(safe-area-inset-top));
+  padding:16px 18px 20px;
+}
+.ob-top{min-height:30px}
+.ob-title{font-size:24px;line-height:1.28;margin:18px 0 7px}
+.ob-copy{font-size:14px;line-height:1.55;margin:0 0 13px}
+.welcome .ob-title{font-size:27px;margin-top:30px}
+.welcome-art{font-size:62px;margin:12px 0}
+.benefits{gap:7px;margin:4px 0 12px}
+.benefit{padding:10px 12px;border-radius:14px}
+.benefit b{width:31px;height:31px}
+.primary{font-size:16px;border-radius:15px;padding:14px}
+.secondary{font-size:15px;border-radius:15px;padding:13px;margin-top:8px}
+.time-card{border-radius:16px;padding:13px;margin-bottom:9px}
+.time-label{margin-bottom:7px}
+.time-label i{font-size:22px}
+.time-card input{font-size:25px;border-radius:12px;padding:9px 12px}
+.hint{padding:10px 12px;border-radius:13px;font-size:12px;line-height:1.45}
+.choices{gap:7px}
+.choice{padding:11px 12px;border-radius:14px}
+.choice .emoji{font-size:21px;width:28px}
+.box{width:23px;height:23px}
+.done-mark{font-size:48px;margin:8px 0 4px}
+.finish-note{font-size:14px;line-height:1.5;margin-bottom:12px}
+.fixed-intro-art,.task-intro-art{font-size:58px;margin:10px 0}
+.type-card,.fixed-item,.task-item{padding:11px 12px;margin:6px 0;border-radius:14px}
+.field{margin-bottom:10px}
+.field input,.field select{padding:11px;border-radius:12px}
+.complete{padding-top:34px}
+.complete .bigcheck{width:74px;height:74px;font-size:44px;margin:6px auto 16px}
+.ai-hero{font-size:66px;margin:12px 0 8px}
+.ai-summary{gap:7px;margin-top:10px}
+.ai-summary>div{padding:11px;border-radius:13px}
+
+/* Home already had an ad slot; keep it directly below the safe area as well. */
+.phone{padding-top:env(safe-area-inset-top)}
+
 </style>
-
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#19c99a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Life Rhythm">
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffffff">
 </head>
 <body>
 
@@ -174,7 +222,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
       <div class="choice single" data-value="特になし"><span class="ctext">特にない</span><span class="box"></span></div>
     </div>
     <div class="done-mark">✓</div><div class="finish-note"><b>基本設定はこれで完了です。</b><br>次は固定予定やタスクを登録できます。</div>
-    <button class="primary" id="finishSetup">設定を完了してホームへ</button>
+    <button class="primary" id="finishSetup">設定を完了して予定登録へ</button>
   </section>
 </div>
 <div class="fixed-flow" id="fixedFlow">
@@ -233,7 +281,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
   <section class="task-screen complete" data-task="4">
     <div class="bigcheck">✓</div><h1 class="ob-title">タスクの登録が完了しました！</h1>
     <p class="finish-note">固定予定・生活リズム・タスクの情報が揃いました。<br>次は「今日の予定」を作る段階です。</p>
-    <div class="ob-spacer"></div><button class="primary" id="finishTask">今日の予定を作成する</button><button class="secondary" id="taskToHome">いったんホームへ</button>
+    <div class="ob-spacer"></div><button class="primary" id="finishTask">AIで今日の予定を作成する</button>
   </section>
 </div>
 
@@ -275,7 +323,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
     <div class="bigcheck">✓</div><h1 class="ob-title">今日の予定ができました！</h1>
     <p class="finish-note">この予定をホームに反映して、今日の行動をチェックしていきます。</p>
     <div class="confirm-stats"><div>📅 今日の予定 <b id="finalCount">0件</b></div><div>📝 配置したタスク <b id="finalTasks">0件</b></div><div>⏱ タスク時間 <b id="finalMinutes">0分</b></div></div>
-    <div class="ob-spacer"></div><button class="primary" id="reflectHome">ホームに反映して開始</button><button class="secondary" id="backAIReview">予定をもう一度確認</button>
+    <div class="ob-spacer"></div><button class="primary" id="reflectHome">ホームに反映する</button><button class="secondary" id="backAIReview">予定をもう一度確認</button>
   </section>
 </div>
 
@@ -448,7 +496,7 @@ document.getElementById('toTaskCalendar').onclick=()=>showTask(3);
 document.getElementById('backTaskList').onclick=()=>showTask(2);
 document.getElementById('confirmTask').onclick=()=>showTask(4);
 document.getElementById('finishTask').onclick=()=>{localStorage.setItem('taskSetup','1');showAI(0)};
-document.getElementById('taskToHome').onclick=()=>{localStorage.setItem('taskSetup','1');showHome()};
+
 function renderTaskWeek(){
   const days=['月','火','水','木','金','土','日'];
   let html='<div class="head"></div>'+days.map(x=>`<div class="head">${x}</div>`).join('');
@@ -506,7 +554,7 @@ document.getElementById('fineEdit').onclick=()=>showAI(3);
 document.getElementById('acceptAI').onclick=()=>showAI(4);
 document.getElementById('backAIReview').onclick=()=>showAI(2);
 function renderAIStats(){finalCount.textContent=aiEvents.length+'件';const ts=aiEvents.filter(x=>x.type==='task');finalTasks.textContent=ts.length+'件';const m=ts.reduce((s,x)=>s+(x.minutes||60),0);finalMinutes.textContent=(Math.floor(m/60)?Math.floor(m/60)+'時間':'')+(m%60?m%60+'分':'')}
-document.getElementById('reflectHome').onclick=()=>{localStorage.setItem('aiPlanReady','1');applyAIToHome();showExec(0)};
+document.getElementById('reflectHome').onclick=()=>{localStorage.setItem('aiPlanReady','1');applyAIToHome();showHome()};
 function applyAIToHome(){
   if(!aiEvents.length)return;
   const container=document.querySelector('.schedule-list')||document.querySelector('.timeline')||document.querySelector('.schedule');
@@ -595,14 +643,6 @@ document.addEventListener("dragstart",e=>e.preventDefault());
 
 setTimeout(()=>{[...document.querySelectorAll('button, .nav-item, .tab')].filter(x=>x.textContent.trim().includes('設定')).forEach(x=>{if(!x.closest('#settingsFlow'))x.addEventListener('click',e=>{e.preventDefault();showSettings()})})},0);
 </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').catch(console.error);
-  });
-}
-</script>
-
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'))}</script>
 </body>
 </html>
