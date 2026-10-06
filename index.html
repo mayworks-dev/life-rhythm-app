@@ -154,9 +154,50 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
 /* Home already had an ad slot; keep it directly below the safe area as well. */
 .phone{padding-top:env(safe-area-inset-top)}
 
+
+/* v11 — first-run flow optimized for one-screen operation on iPhone */
+.onboarding,.fixed-flow,.task-flow,.ai-flow{height:100dvh;min-height:0;overflow:hidden}
+.ob-screen,.fixed-screen,.task-screen,.ai-screen{
+  height:calc(100dvh - env(safe-area-inset-top) - 50px);
+  min-height:0!important;
+  overflow:hidden;
+  padding:10px 16px 12px!important;
+}
+.ob-title{font-size:21px!important;line-height:1.22!important;margin:10px 0 5px!important}
+.ob-copy{font-size:12px!important;line-height:1.4!important;margin:0 0 8px!important}
+.welcome .ob-title{font-size:24px!important;margin-top:10px!important}
+.welcome-art{font-size:42px!important;margin:5px 0!important}
+.benefits{gap:5px!important;margin:3px 0 7px!important}
+.benefit{padding:7px 10px!important;font-size:13px!important}
+.benefit b{width:27px!important;height:27px!important}
+.ob-top{min-height:25px!important}
+.stepbar{height:6px!important}
+.primary{padding:11px!important;font-size:14px!important;border-radius:13px!important}
+.secondary{padding:10px!important;font-size:13px!important;border-radius:13px!important;margin-top:5px!important}
+.time-card{padding:8px 10px!important;margin-bottom:6px!important;border-radius:13px!important}
+.time-label{font-size:13px!important;margin-bottom:3px!important}
+.time-label i{font-size:18px!important}
+.time-card input{font-size:21px!important;padding:5px 8px!important}
+.hint{padding:7px 9px!important;font-size:10.5px!important;line-height:1.3!important;margin-top:2px!important}
+.choices{gap:4px!important}
+.choice{padding:7px 9px!important;border-radius:11px!important;font-size:12.5px!important}
+.choice .emoji{font-size:17px!important;width:23px!important}
+.box{width:19px!important;height:19px!important}
+.done-mark{font-size:30px!important;margin:2px 0!important}
+.finish-note{font-size:11px!important;line-height:1.35!important;margin-bottom:5px!important}
+.fixed-intro-art,.task-intro-art{font-size:38px!important;margin:3px 0!important}
+.type-card{padding:7px 9px!important;margin:3px 0!important;border-radius:11px!important;font-size:12px!important}
+.type-card b{font-size:18px!important}
+.field{margin-bottom:6px!important}.field label{font-size:11px!important;margin-bottom:3px!important}
+.field input,.field select{padding:7px!important;font-size:13px!important;border-radius:9px!important}
+.two{gap:6px!important}.repeat-toggle{margin-bottom:5px!important}.repeat-toggle button{padding:7px!important}
+.days{margin-bottom:6px!important}.day{width:30px!important;height:30px!important;font-size:11px!important}
+.task-category{gap:4px!important;margin-bottom:6px!important}.cat{padding:6px 3px!important;font-size:11px!important}.cat span{font-size:17px!important;margin-bottom:2px!important}
+.priority{gap:5px!important}.priority button{padding:7px!important}
+.ai-hero{font-size:42px!important;margin:5px 0!important}.ai-summary{gap:4px!important;margin-top:5px!important}.ai-summary>div{padding:7px!important;font-size:12px!important}
+.complete{padding-top:12px!important}.complete .bigcheck{width:48px!important;height:48px!important;font-size:28px!important;margin:2px auto 6px!important}
+
 </style>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffffff">
 </head>
 <body>
 
@@ -323,8 +364,19 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
     <div class="bigcheck">✓</div><h1 class="ob-title">今日の予定ができました！</h1>
     <p class="finish-note">この予定をホームに反映して、今日の行動をチェックしていきます。</p>
     <div class="confirm-stats"><div>📅 今日の予定 <b id="finalCount">0件</b></div><div>📝 配置したタスク <b id="finalTasks">0件</b></div><div>⏱ タスク時間 <b id="finalMinutes">0分</b></div></div>
-    <div class="ob-spacer"></div><button class="primary" id="reflectHome">ホームに反映する</button><button class="secondary" id="backAIReview">予定をもう一度確認</button>
+    <div class="ob-spacer"></div><button class="primary" id="reflectHome">予定を確定する</button><button class="secondary" id="backAIReview">予定をもう一度確認</button>
   </section>
+
+<section class="ai-screen complete" data-ai="5">
+  <div class="bigcheck">✓</div>
+  <h1 class="ob-title">準備ができました！</h1>
+  <p class="finish-note">生活リズム・固定予定・タスクをもとに、あなた向けの予定を作成しました。</p>
+  <div class="ai-hero" style="font-size:48px">🌱✨</div>
+  <h2 style="text-align:center;margin:4px 0 6px">Life Rhythmへようこそ</h2>
+  <p class="ob-copy" style="text-align:center">無理のない予定から、少しずつ生活リズムを整えていきましょう。</p>
+  <div class="ob-spacer"></div>
+  <button class="primary" id="welcomeHome">ホームをはじめる</button>
+</section>
 </div>
 
 
@@ -383,7 +435,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
   <h3>アプリ</h3>
   <div class="settings-card">
    <div class="settings-row"><span class="settings-icon">🔔</span><b>通知</b><span>準備中</span></div>
-   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v9.1</span></div>
+   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v11</span></div>
   </div>
 
   <div class="danger-card">
@@ -471,7 +523,7 @@ function showTask(n){
   if(taskStep===2)renderTasks(); if(taskStep===3)renderTaskWeek(); window.scrollTo(0,0);
 }
 document.querySelectorAll('.back-task').forEach(b=>b.onclick=()=>taskStep===0?showFixed(4):showTask(taskStep-1));
-document.getElementById('skipTask').onclick=()=>{localStorage.setItem('taskSetup','1');showHome()};
+document.getElementById('skipTask').onclick=()=>{localStorage.setItem('taskSetup','1');showAI(0)};
 document.getElementById('startTask').onclick=()=>showTask(1);
 document.querySelectorAll('#taskCategories .cat').forEach(b=>b.onclick=()=>{document.querySelectorAll('#taskCategories .cat').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
 document.querySelectorAll('#priority button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#priority button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
@@ -516,7 +568,7 @@ let aiStep=0; const aiScreens=[...document.querySelectorAll('.ai-screen')];
 let aiEvents=JSON.parse(localStorage.getItem('aiTodayEvents')||'null')||[];
 function showAI(n){
   ob.style.display='none';homeWrap.classList.remove('active');fixedFlow.classList.remove('active');taskFlow.classList.remove('active');aiFlow.classList.add('active');
-  aiStep=Math.max(0,Math.min(4,n));aiScreens.forEach((x,i)=>x.classList.toggle('active',i===aiStep));
+  aiStep=Math.max(0,Math.min(5,n));aiScreens.forEach((x,i)=>x.classList.toggle('active',i===aiStep));
   if(aiStep===0){aiFixedCount.textContent=fixedItems.length+'件';aiTaskCount.textContent=taskItems.length+'件'}
   if(aiStep===2)renderAI(); if(aiStep===3)prepareEdit(); if(aiStep===4)renderAIStats(); window.scrollTo(0,0);
 }
@@ -554,7 +606,8 @@ document.getElementById('fineEdit').onclick=()=>showAI(3);
 document.getElementById('acceptAI').onclick=()=>showAI(4);
 document.getElementById('backAIReview').onclick=()=>showAI(2);
 function renderAIStats(){finalCount.textContent=aiEvents.length+'件';const ts=aiEvents.filter(x=>x.type==='task');finalTasks.textContent=ts.length+'件';const m=ts.reduce((s,x)=>s+(x.minutes||60),0);finalMinutes.textContent=(Math.floor(m/60)?Math.floor(m/60)+'時間':'')+(m%60?m%60+'分':'')}
-document.getElementById('reflectHome').onclick=()=>{localStorage.setItem('aiPlanReady','1');applyAIToHome();showHome()};
+document.getElementById('reflectHome').onclick=()=>{localStorage.setItem('aiPlanReady','1');applyAIToHome();showAI(5)};
+document.getElementById('welcomeHome').onclick=()=>{localStorage.setItem('firstRunComplete','1');showHome()};
 function applyAIToHome(){
   if(!aiEvents.length)return;
   const container=document.querySelector('.schedule-list')||document.querySelector('.timeline')||document.querySelector('.schedule');
@@ -631,18 +684,18 @@ function render(){
 render();
 document.getElementById("add").onclick=()=>showFixed(1)
 // 初期表示は、すべての関数・イベント登録後に判定する
-if(localStorage.getItem('lifeRhythmSetup')==='1' && localStorage.getItem('fixedSetup')==='1' && localStorage.getItem('taskSetup')==='1' && localStorage.getItem('aiPlanReady')==='1'){showHome();setTimeout(applyAIToHome,0)}
+if(localStorage.getItem('firstRunComplete')==='1'){showHome();setTimeout(applyAIToHome,0)}
+else if(localStorage.getItem('lifeRhythmSetup')==='1' && localStorage.getItem('fixedSetup')==='1' && localStorage.getItem('taskSetup')==='1' && localStorage.getItem('aiPlanReady')==='1') showAI(5);
 else if(localStorage.getItem('lifeRhythmSetup')==='1' && localStorage.getItem('fixedSetup')==='1' && localStorage.getItem('taskSetup')==='1') showAI(0);
 else if(localStorage.getItem('lifeRhythmSetup')==='1' && localStorage.getItem('fixedSetup')==='1') showTask(0);
 else if(localStorage.getItem('lifeRhythmSetup')==='1') showFixed(0);
 else showStep(0);
-document.getElementById('settingsNav').onclick=()=>{localStorage.removeItem('lifeRhythmSetup');localStorage.removeItem('lifeRhythmProfile');localStorage.removeItem('fixedSetup');localStorage.removeItem('fixedItems');localStorage.removeItem('taskSetup');localStorage.removeItem('taskItems');localStorage.removeItem('aiPlanReady');localStorage.removeItem('aiTodayEvents');showOnboarding();};
+document.getElementById('settingsNav').onclick=()=>showSettings();
 document.addEventListener("contextmenu",e=>e.preventDefault());
 document.addEventListener("selectstart",e=>e.preventDefault());
 document.addEventListener("dragstart",e=>e.preventDefault());
 
 setTimeout(()=>{[...document.querySelectorAll('button, .nav-item, .tab')].filter(x=>x.textContent.trim().includes('設定')).forEach(x=>{if(!x.closest('#settingsFlow'))x.addEventListener('click',e=>{e.preventDefault();showSettings()})})},0);
 </script>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'))}</script>
 </body>
 </html>
