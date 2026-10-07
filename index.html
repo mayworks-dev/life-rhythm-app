@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>生活リズム - ホーム</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#19c99a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Life Rhythm">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 <style>
 :root{--green:#22ad7b;--ink:#13233b;--muted:#718096;--line:#e8eef0;--bg:#f5f8f6}
 *{
@@ -435,7 +441,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
   <h3>アプリ</h3>
   <div class="settings-card">
    <div class="settings-row"><span class="settings-icon">🔔</span><b>通知</b><span>準備中</span></div>
-   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v11.1</span></div>
+   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v11.2</span></div>
   </div>
 
   <div class="danger-card">
@@ -606,7 +612,7 @@ document.getElementById('fineEdit').onclick=()=>showAI(3);
 document.getElementById('acceptAI').onclick=()=>showAI(4);
 document.getElementById('backAIReview').onclick=()=>showAI(2);
 function renderAIStats(){finalCount.textContent=aiEvents.length+'件';const ts=aiEvents.filter(x=>x.type==='task');finalTasks.textContent=ts.length+'件';const m=ts.reduce((s,x)=>s+(x.minutes||60),0);finalMinutes.textContent=(Math.floor(m/60)?Math.floor(m/60)+'時間':'')+(m%60?m%60+'分':'')}
-document.getElementById('reflectHome').onclick=()=>{localStorage.setItem('aiPlanReady','1');applyAIToHome();showAI(5)};
+document.getElementById('reflectHome').onclick=()=>{localStorage.setItem('aiPlanReady','1');localStorage.setItem('firstRunComplete','1');applyAIToHome();showHome()};
 document.getElementById('welcomeHome').onclick=()=>{localStorage.setItem('firstRunComplete','1');showHome()};
 function applyAIToHome(){
   if(!aiEvents.length)return;
