@@ -435,7 +435,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
   <h3>アプリ</h3>
   <div class="settings-card">
    <div class="settings-row"><span class="settings-icon">🔔</span><b>通知</b><span>準備中</span></div>
-   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v11</span></div>
+   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v11.1</span></div>
   </div>
 
   <div class="danger-card">
@@ -695,7 +695,8 @@ document.addEventListener("contextmenu",e=>e.preventDefault());
 document.addEventListener("selectstart",e=>e.preventDefault());
 document.addEventListener("dragstart",e=>e.preventDefault());
 
-setTimeout(()=>{[...document.querySelectorAll('button, .nav-item, .tab')].filter(x=>x.textContent.trim().includes('設定')).forEach(x=>{if(!x.closest('#settingsFlow'))x.addEventListener('click',e=>{e.preventDefault();showSettings()})})},0);
+// 設定画面は下部ナビの設定ボタンからのみ開く。
+// 『設定を完了』など、文言に『設定』を含む他のボタンには紐づけない。
 </script>
 </body>
 </html>
