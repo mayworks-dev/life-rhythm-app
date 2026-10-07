@@ -203,6 +203,14 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
 .ai-hero{font-size:42px!important;margin:5px 0!important}.ai-summary{gap:4px!important;margin-top:5px!important}.ai-summary>div{padding:7px!important;font-size:12px!important}
 .complete{padding-top:12px!important}.complete .bigcheck{width:48px!important;height:48px!important;font-size:28px!important;margin:2px auto 6px!important}
 
+
+/* v11.3 — keep AI proposal action visible and go directly home */
+.ai-screen[data-ai="2"]{display:none;flex-direction:column;height:calc(100dvh - env(safe-area-inset-top) - 50px);overflow:hidden}
+.ai-flow.active .ai-screen[data-ai="2"].active{display:flex}
+.ai-screen[data-ai="2"] .ai-timeline{flex:1;min-height:0;overflow-y:auto;margin-bottom:6px;-webkit-overflow-scrolling:touch}
+.ai-screen[data-ai="2"] .ob-spacer{display:none}
+.ai-screen[data-ai="2"] #fineEdit{flex:0 0 auto;margin-top:2px!important}
+.ai-screen[data-ai="2"] #acceptAI{flex:0 0 auto;margin-top:6px!important;margin-bottom:max(4px,env(safe-area-inset-bottom))!important}
 </style>
 </head>
 <body>
@@ -441,7 +449,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
   <h3>アプリ</h3>
   <div class="settings-card">
    <div class="settings-row"><span class="settings-icon">🔔</span><b>通知</b><span>準備中</span></div>
-   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v11.2</span></div>
+   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v11.3.2</span></div>
   </div>
 
   <div class="danger-card">
@@ -609,7 +617,7 @@ editEvent.onchange=()=>prepareEdit(parseInt(editEvent.value));
 document.getElementById('saveAIEdit').onclick=()=>{const i=parseInt(editEvent.value);if(aiEvents[i]){aiEvents[i].start=editStart.value;aiEvents[i].end=editEnd.value;aiEvents.sort((a,b)=>a.start.localeCompare(b.start));localStorage.setItem('aiTodayEvents',JSON.stringify(aiEvents))}showAI(2)};
 document.getElementById('deleteAIEvent').onclick=()=>{aiEvents.splice(parseInt(editEvent.value),1);localStorage.setItem('aiTodayEvents',JSON.stringify(aiEvents));showAI(2)};
 document.getElementById('fineEdit').onclick=()=>showAI(3);
-document.getElementById('acceptAI').onclick=()=>showAI(4);
+document.getElementById('acceptAI').onclick=()=>{localStorage.setItem('aiPlanReady','1');localStorage.setItem('firstRunComplete','1');applyAIToHome();showHome()};
 document.getElementById('backAIReview').onclick=()=>showAI(2);
 function renderAIStats(){finalCount.textContent=aiEvents.length+'件';const ts=aiEvents.filter(x=>x.type==='task');finalTasks.textContent=ts.length+'件';const m=ts.reduce((s,x)=>s+(x.minutes||60),0);finalMinutes.textContent=(Math.floor(m/60)?Math.floor(m/60)+'時間':'')+(m%60?m%60+'分':'')}
 document.getElementById('reflectHome').onclick=()=>{localStorage.setItem('aiPlanReady','1');localStorage.setItem('firstRunComplete','1');applyAIToHome();showHome()};
