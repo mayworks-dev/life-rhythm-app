@@ -211,6 +211,13 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
 .ai-screen[data-ai="2"] .ob-spacer{display:none}
 .ai-screen[data-ai="2"] #fineEdit{flex:0 0 auto;margin-top:2px!important}
 .ai-screen[data-ai="2"] #acceptAI{flex:0 0 auto;margin-top:6px!important;margin-bottom:max(4px,env(safe-area-inset-bottom))!important}
+
+/* v12: low-friction home */
+.top-ad[hidden]{display:none!important}
+.next-panel{background:linear-gradient(135deg,#e7f8f0,#f3faf7);border:1px solid #c9eadd;border-radius:20px;padding:17px;margin-bottom:20px;color:#163c32}
+.next-eyebrow{font-size:12px;font-weight:800;color:#43826b}.next-title{font-size:23px;font-weight:900;margin:8px 0}.next-meta{font-size:13px;color:#527365}
+.next-actions{display:flex;gap:9px;margin-top:15px}.next-actions button{flex:1;border:0;border-radius:12px;padding:12px;font-size:14px;font-weight:800;background:#20ae7c;color:#fff}.next-actions button+button{background:#fff;color:#39765f;border:1px solid #c9e2d6}.next-help{font-size:11px;color:#658276;margin-top:10px}
+.planner-note{padding:10px;border-radius:10px;background:#fff3e0;color:#8a5b13;font-size:12px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -449,7 +456,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
   <h3>アプリ</h3>
   <div class="settings-card">
    <div class="settings-row"><span class="settings-icon">🔔</span><b>通知</b><span>準備中</span></div>
-   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v11.3.2</span></div>
+   <div class="settings-row"><span class="settings-icon">ℹ️</span><b>バージョン</b><span>Prototype v12.3.2</span></div>
   </div>
 
   <div class="danger-card">
@@ -464,9 +471,9 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
 </div>
 <div class="home-wrap" id="homeWrap"><button id="openAnalysis" style="position:fixed;right:20px;bottom:148px;z-index:30;border:0;border-radius:999px;background:#7664e8;color:white;padding:12px 17px;font-weight:900">📊 分析</button><button id="openExecution" style="position:fixed;right:20px;bottom:92px;z-index:30;border:0;border-radius:999px;background:#20b486;color:white;padding:14px 18px;font-weight:900">▶ 今日の予定を実行</button>
 <div class="phone">
-  <div class="ad top-ad">バナー広告スペース</div>
+  <div class="ad top-ad" id="homeAd" hidden></div>
   <header class="hero">
-    <div class="top"><div class="date">10月3日（土）</div><div class="avatar">♙</div></div>
+    <div class="top"><div class="date" id="homeDate"></div><div class="avatar">♙</div></div>
     <h1>おはようございます</h1>
     <p class="sub">今日も良い一日にしましょう！</p>
     <div class="progress-card">
@@ -475,6 +482,7 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,
     </div>
   </header>
   <main>
+    <section class="next-panel" id="nextPanel"><div class="next-eyebrow">次にやること</div><div class="next-title" id="nextTitle">予定を準備中</div><div class="next-meta" id="nextMeta"></div><div class="next-actions"><button id="nextDone">✓ 完了</button><button id="nextLater">あとで</button></div><div class="next-help" id="nextHelp">少しずつ進めればOKです</div></section>
     <div class="section-head"><h2>今日の予定</h2><button class="add" id="add">＋ 予定を追加</button></div>
     <div class="schedule" id="schedule"></div>
   </main>
@@ -493,7 +501,7 @@ let obStep=0;
 const ob=document.getElementById('onboarding'), homeWrap=document.getElementById('homeWrap'), fixedFlow=document.getElementById('fixedFlow'), taskFlow=document.getElementById('taskFlow'), aiFlow=document.getElementById('aiFlow'), execFlow=document.getElementById('execFlow'), analysisFlow=document.getElementById('analysisFlow'), settingsFlow=document.getElementById('settingsFlow');
 const screens=[...document.querySelectorAll('.ob-screen')];
 function showStep(n){obStep=Math.max(0,Math.min(4,n));screens.forEach((x,i)=>x.classList.toggle('active',i===obStep));window.scrollTo(0,0)}
-function showHome(){ob.style.display='none';fixedFlow.classList.remove('active');taskFlow.classList.remove('active');aiFlow.classList.remove('active');execFlow.classList.remove('active');analysisFlow.classList.remove('active');settingsFlow.classList.remove('active');homeWrap.classList.add('active');}
+function showHome(){setTimeout(render,0);ob.style.display='none';fixedFlow.classList.remove('active');taskFlow.classList.remove('active');aiFlow.classList.remove('active');execFlow.classList.remove('active');analysisFlow.classList.remove('active');settingsFlow.classList.remove('active');homeWrap.classList.add('active');}
 function showOnboarding(){homeWrap.classList.remove('active');ob.style.display='block';showStep(0)}
 document.querySelectorAll('.next').forEach(b=>b.onclick=()=>showStep(obStep+1));
 document.querySelectorAll('.back').forEach(b=>b.onclick=()=>showStep(obStep-1));
@@ -512,10 +520,7 @@ document.getElementById('finishSetup').onclick=()=>{
   localStorage.setItem('lifeRhythmProfile',JSON.stringify(profile));localStorage.setItem('lifeRhythmSetup','1');showFixed(0);
 };
 let fixedStep=0;const fixedScreens=[...document.querySelectorAll('.fixed-screen')];
-let fixedItems=JSON.parse(localStorage.getItem('fixedItems')||'null')||[
-{name:'大学（講義）',start:'09:00',end:'12:00',days:['月','火','水','木','金'],icon:'🎓'},
-{name:'昼食',start:'12:00',end:'13:00',days:['月','火','水','木','金'],icon:'🍴'},
-{name:'バイト',start:'18:00',end:'22:00',days:['火','木','土'],icon:'💼'}];
+let fixedItems=JSON.parse(localStorage.getItem('fixedItems')||'[]');
 function showFixed(n){ob.style.display='none';homeWrap.classList.remove('active');fixedFlow.classList.add('active');fixedStep=Math.max(0,Math.min(4,n));fixedScreens.forEach((x,i)=>x.classList.toggle('active',i===fixedStep));if(fixedStep===2)renderFixed();if(fixedStep===3)renderWeek();window.scrollTo(0,0)}
 document.querySelectorAll('.back-fixed').forEach(b=>b.onclick=()=>fixedStep===0?showOnboarding():showFixed(fixedStep-1));
 document.getElementById('startFixed').onclick=()=>showFixed(1);document.getElementById('skipFixed').onclick=()=>{localStorage.setItem('fixedSetup','1');showTask(0)};
@@ -526,11 +531,7 @@ document.getElementById('addFixed').onclick=()=>showFixed(1);document.getElement
 function renderWeek(){let html='<div class="head"></div>'+['月','火','水','木','金'].map(x=>`<div class="head">${x}</div>`).join('');['9:00','12:00','15:00','18:00','21:00'].forEach(t=>{html+=`<div>${t}</div>`;['月','火','水','木','金'].forEach(day=>{let ev=fixedItems.filter(x=>x.days.includes(day)&&parseInt(x.start)>=parseInt(t)&&parseInt(x.start)<parseInt(t)+3);html+='<div>'+ev.map(x=>`<div class="event ${x.name.includes('昼')?'meal':x.name.includes('バイト')?'work':''}">${x.name}<br>${x.start}</div>`).join('')+'</div>'})});document.getElementById('week').innerHTML=html}
 
 let taskStep=0; const taskScreens=[...document.querySelectorAll('.task-screen')];
-let taskItems=JSON.parse(localStorage.getItem('taskItems')||'null')||[
-  {name:'経済学レポート',cat:'課題',icon:'📄',deadline:'2026-10-08',minutes:90,priority:'高',memo:'第3章まで書く。参考文献を確認する。'},
-  {name:'TOEIC勉強',cat:'勉強',icon:'📘',deadline:'2026-10-12',minutes:60,priority:'中',memo:'リスニングPart3,4を中心に'},
-  {name:'買い物',cat:'買い物',icon:'🛒',deadline:'',minutes:30,priority:'低',memo:'食材と日用品を買う'}
-];
+let taskItems=JSON.parse(localStorage.getItem('taskItems')||'[]');
 function showTask(n){
   ob.style.display='none'; homeWrap.classList.remove('active'); fixedFlow.classList.remove('active'); taskFlow.classList.add('active');
   taskStep=Math.max(0,Math.min(4,n)); taskScreens.forEach((x,i)=>x.classList.toggle('active',i===taskStep));
@@ -587,25 +588,49 @@ function showAI(n){
   if(aiStep===2)renderAI(); if(aiStep===3)prepareEdit(); if(aiStep===4)renderAIStats(); window.scrollTo(0,0);
 }
 document.querySelectorAll('.back-ai').forEach(b=>b.onclick=()=>aiStep===0?showTask(4):showAI(aiStep-1));
+// v12: deterministic local planner; no remote AI is called.
 function makeAIPlan(){
-  const plan=[
-    {start:'07:00',end:'07:30',name:'起床・身支度',type:'life'},
-    {start:'07:30',end:'08:00',name:'朝食',type:'life'}
-  ];
-  const fixed=(fixedItems||[]).slice(0,3);
-  if(fixed.length){fixed.forEach(x=>plan.push({start:x.start||'09:00',end:x.end||'10:00',name:x.name||'固定予定',type:'fixed'}))}
-  else plan.push({start:'09:00',end:'12:00',name:'大学（講義）',type:'fixed'});
-  const slots=[['13:00','14:30'],['15:00','16:00'],['17:00','18:00'],['19:30','21:00']];
-  taskItems.slice().sort((a,b)=>({高:0,中:1,低:2}[a.priority]-({高:0,中:1,低:2}[b.priority]))).slice(0,4).forEach((x,i)=>{
-    const s=slots[i]||['20:00','21:00'];plan.push({start:s[0],end:s[1],name:x.name,type:'task',minutes:x.minutes||60});
+  const day=['日','月','火','水','木','金','土'][new Date().getDay()];
+  const plan=[];
+  const toMin=t=>{const a=String(t||'00:00').split(':').map(Number);return a[0]*60+(a[1]||0)};
+  const fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  const add=(start,end,name,type,extra={})=>{if(end>start&&start>=0&&end<=1440)plan.push({start:fmt(start),end:fmt(end),name,type,...extra})};
+  const overlaps=(start,end)=>plan.some(x=>start<toMin(x.end)&&end>toMin(x.start));
+  const place=(name,type,duration,earliest,latest,extra={})=>{
+    for(let t=earliest;t+duration<=latest;t+=15){if(!overlaps(t,t+duration)){add(t,t+duration,name,type,extra);return true}}
+    return false;
+  };
+  (fixedItems||[]).filter(x=>Array.isArray(x.days)&&x.days.includes(day)).forEach(x=>{
+    const start=toMin(x.start),end=toMin(x.end);add(start,end,x.name||'固定予定','fixed');
   });
-  plan.push({start:'18:00',end:'19:00',name:'夕食',type:'life'},{start:'21:00',end:'22:30',name:'自由時間',type:'free'},{start:'22:30',end:'23:00',name:'就寝準備',type:'life'});
-  aiEvents=plan.sort((a,b)=>a.start.localeCompare(b.start));localStorage.setItem('aiTodayEvents',JSON.stringify(aiEvents));
+  const profile=JSON.parse(localStorage.getItem('lifeRhythmProfile')||'{}');
+  const wake=Math.max(300,Math.min(660,toMin(profile.wakeGoal||profile.wakeNow||'07:00')));
+  const sleep=Math.max(1200,Math.min(1440,toMin(profile.sleepGoal||profile.sleepNow||'23:00')));
+  place('起床・身支度','life',30,wake,Math.min(wake+90,780));
+  place('朝食','life',30,wake+30,660);
+  place('昼食','life',45,690,870);
+  place('夕食','life',45,1050,Math.min(sleep-60,1380));
+  const priority={高:0,中:1,低:2};
+  const sorted=(taskItems||[]).slice().sort((a,b)=>(priority[a.priority]??1)-(priority[b.priority]??1));
+  const unplaced=[];
+  sorted.forEach(x=>{
+    let remaining=Math.max(15,Math.min(240,Number(x.minutes)||30));let count=0;
+    while(remaining>0&&count<4){
+      const duration=Math.min(remaining,60);
+      const ok=place(x.name||'タスク','task',duration,Math.max(wake+60,540),Math.min(sleep-45,1320),{minutes:duration});
+      if(!ok){unplaced.push(x.name||'タスク');break}
+      remaining-=duration;count++;
+    }
+  });
+  place('就寝準備','life',30,Math.max(1140,sleep-60),sleep);
+  aiEvents=plan.sort((a,b)=>a.start.localeCompare(b.start));
+  localStorage.setItem('aiTodayEvents',JSON.stringify(aiEvents));
+  localStorage.setItem('aiUnplaced',JSON.stringify([...new Set(unplaced)]));
 }
 document.getElementById('generateAI').onclick=()=>{showAI(1);setTimeout(()=>{makeAIPlan();showAI(2)},1500)};
 document.getElementById('regenerate').onclick=()=>{showAI(1);setTimeout(()=>{makeAIPlan();showAI(2)},1200)};
 function renderAI(){
-  aiTimeline.innerHTML='';aiEvents.forEach((x,i)=>{const d=document.createElement('div');d.className='ai-event '+x.type;
+  aiTimeline.innerHTML='';const unplaced=JSON.parse(localStorage.getItem('aiUnplaced')||'[]');if(unplaced.length){const note=document.createElement('div');note.className='planner-note';note.textContent='時間が足りず配置できなかったタスク：'+unplaced.join('、')+'。固定予定を優先しました。';aiTimeline.appendChild(note)}aiEvents.forEach((x,i)=>{const d=document.createElement('div');d.className='ai-event '+x.type;
     d.innerHTML=`<div class="time">${x.start} - ${x.end}</div><div class="event-name">${x.name}</div><button data-i="${i}">✎</button>`;
     d.querySelector('button').onclick=()=>{editEvent.value=String(i);prepareEdit(i);showAI(3)};aiTimeline.appendChild(d)});
 }
@@ -622,14 +647,7 @@ document.getElementById('backAIReview').onclick=()=>showAI(2);
 function renderAIStats(){finalCount.textContent=aiEvents.length+'件';const ts=aiEvents.filter(x=>x.type==='task');finalTasks.textContent=ts.length+'件';const m=ts.reduce((s,x)=>s+(x.minutes||60),0);finalMinutes.textContent=(Math.floor(m/60)?Math.floor(m/60)+'時間':'')+(m%60?m%60+'分':'')}
 document.getElementById('reflectHome').onclick=()=>{localStorage.setItem('aiPlanReady','1');localStorage.setItem('firstRunComplete','1');applyAIToHome();showHome()};
 document.getElementById('welcomeHome').onclick=()=>{localStorage.setItem('firstRunComplete','1');showHome()};
-function applyAIToHome(){
-  if(!aiEvents.length)return;
-  const container=document.querySelector('.schedule-list')||document.querySelector('.timeline')||document.querySelector('.schedule');
-  if(!container)return;
-  const candidates=[...container.children];
-  if(candidates.length){container.innerHTML='';aiEvents.forEach(x=>{const d=document.createElement('div');d.className='schedule-item';d.innerHTML=`<div class="time">${x.start}</div><div class="task">${x.name}</div><input type="checkbox">`;container.appendChild(d)})}
-}
-
+function applyAIToHome(){setTimeout(render,0)}
 
 let execStep=0,activeExecIndex=0,selectedStatus='done';const execScreens=[...document.querySelectorAll('.exec-screen')];let execState=JSON.parse(localStorage.getItem('execState')||'{}'),beforeAdjust=[];
 function showExec(n){ob.style.display='none';homeWrap.classList.remove('active');fixedFlow.classList.remove('active');taskFlow.classList.remove('active');aiFlow.classList.remove('active');execFlow.classList.add('active');execStep=n;execScreens.forEach((x,i)=>x.classList.toggle('active',i===n));if(n===0)renderExec();if(n===3)renderAdjusted();if(n===5)renderReview();window.scrollTo(0,0)}
@@ -683,22 +701,40 @@ const data=[
 ];
 const s=document.getElementById("schedule");
 function render(){
- s.innerHTML="";
- data.forEach((x,i)=>{
-   const el=document.createElement("div"); el.className="item"+(x[4]?" done":"");
-   el.innerHTML=`<div class="time">${x[0]}</div><div class="icon">${x[1]}</div><div><div class="title">${x[2]}</div><div class="detail">${x[3]}</div></div><button class="check" aria-label="完了">${x[4]?"✓":""}</button>`;
-   el.querySelector(".check").onclick=()=>{data[i][4]=data[i][4]?0:1;render()};
-   s.appendChild(el);
+ const d=new Date();document.getElementById('homeDate').textContent=`${d.getMonth()+1}月${d.getDate()}日（${'日月火水木金土'[d.getDay()]}）`;
+ s.innerHTML='';
+ const today=aiEvents.length?aiEvents.map((x,i)=>({name:x.name,start:x.start,end:x.end,type:x.type,index:i})):[];
+ const done= today.filter(x=>execState[x.index]?.status==='done').length;
+ document.getElementById('count').textContent=`${done} / ${today.length} 完了`;
+ document.getElementById('percent').textContent=(today.length?Math.round(done/today.length*100):0)+'%';
+ document.getElementById('fill').style.width=(today.length?done/today.length*100:0)+'%';
+ today.forEach(x=>{
+   const el=document.createElement('div');el.className='item'+(execState[x.index]?.status==='done'?' done':'');
+   const label=document.createElement('div');label.className='time';label.textContent=x.start+' - '+x.end;
+   const emoji=document.createElement('div');emoji.className='icon';emoji.textContent=x.type==='fixed'?'📌':x.type==='task'?'📝':'🌿';
+   const body=document.createElement('div');const title=document.createElement('div');title.className='title';title.textContent=x.name;body.appendChild(title);
+   const btn=document.createElement('button');btn.className='check';btn.textContent=execState[x.index]?.status==='done'?'✓':'';btn.setAttribute('aria-label',x.name+'を完了');
+   btn.onclick=()=>{execState[x.index]={status:execState[x.index]?.status==='done'?'pending':'done'};localStorage.setItem('execState',JSON.stringify(execState));render()};
+   el.append(label,emoji,body,btn);s.appendChild(el);
  });
- const done=data.filter(x=>x[4]).length,p=Math.round(done/data.length*100);
- document.getElementById("count").textContent=`${done} / ${data.length} 完了`;
- document.getElementById("percent").textContent=p+"%";
- document.getElementById("fill").style.width=p+"%";
+ const pending=today.filter(x=>!['done','skip'].includes(execState[x.index]?.status));
+ const now=new Date().getHours()*60+new Date().getMinutes();
+ const toM=t=>Number(t.slice(0,2))*60+Number(t.slice(3));
+ const current=pending.find(x=>toM(x.start)<=now&&toM(x.end)>now)||pending.find(x=>toM(x.start)>now)||pending[0];
+ window.currentHomeEvent=current||null;
+ document.getElementById('nextTitle').textContent=current?current.name:'今日の予定は完了です 🎉';
+ document.getElementById('nextMeta').textContent=current?current.start+'〜'+current.end+(current.type==='fixed'?' ・固定予定':''):'無理せず休んでください';
+ document.querySelector('.next-actions').style.display=current?'flex':'none';
+ const skipped=Object.values(execState).filter(x=>x.status==='skip').length;
+ document.getElementById('nextHelp').textContent=skipped?'延期した予定は一覧から確認できます':'予定どおりにできなくても大丈夫';
 }
+
 render();
+document.getElementById('nextDone').onclick=()=>{const x=window.currentHomeEvent;if(!x)return;execState[x.index]={status:'done'};localStorage.setItem('execState',JSON.stringify(execState));render()};
+document.getElementById('nextLater').onclick=()=>{const x=window.currentHomeEvent;if(!x)return;execState[x.index]={status:'skip'};localStorage.setItem('execState',JSON.stringify(execState));render()};
 document.getElementById("add").onclick=()=>showFixed(1)
 // 初期表示は、すべての関数・イベント登録後に判定する
-if(localStorage.getItem('firstRunComplete')==='1'){showHome();setTimeout(applyAIToHome,0)}
+if(localStorage.getItem('firstRunComplete')==='1'){showHome()}
 else if(localStorage.getItem('lifeRhythmSetup')==='1' && localStorage.getItem('fixedSetup')==='1' && localStorage.getItem('taskSetup')==='1' && localStorage.getItem('aiPlanReady')==='1') showAI(5);
 else if(localStorage.getItem('lifeRhythmSetup')==='1' && localStorage.getItem('fixedSetup')==='1' && localStorage.getItem('taskSetup')==='1') showAI(0);
 else if(localStorage.getItem('lifeRhythmSetup')==='1' && localStorage.getItem('fixedSetup')==='1') showTask(0);
